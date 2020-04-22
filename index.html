@@ -12,7 +12,7 @@
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
-        <!-- jQuery library -->
+        <!-- Standard jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <!-- Popper JS -->
@@ -28,6 +28,46 @@
         <title>VSFS Visualizer</title>
     </head>
     <body>
+        <h1 class="text-center text-light">Very Simple File System (VSFS) Visualizer</h1>
+        <form class="form">
+            <div class="form-group">
+                <label for="numberOfBlocks">Number of Data Blocks:</label>
+                <input id="numberOfBlocks" class="form-control" type="number" min="1" max="64" value="1" placeholder="Enter an integer..." />   
+                <small class="form-text text-muted">32 is the maximum number of supported data blocks.</small>
+            </div>
+            <div class="form-group">
+                <label for="blockSize">Block Size:</label>
+                <input id="blockSize" type="number" class="form-control" value="1" min="1" placeholder="Enter a number..." />
+                <small class="form-text text-muted">Data block sizes are represented in KiB.</small>
+            </div>
+            <button type="button" onclick="visualize()" class="btn btn-primary">Visualize</button>
+        </form>
+        <form class="form">
+            <div class="form-group">
+                <label for="filename">Filename:</label>
+                <input id="filename" class="form-control" type="text" placeholder="Enter a filename..." />   
+                <small class="form-text text-muted">e.g. visualize.txt</small>
+            </div>
+            <div class="form-group">
+                <label for="fileSize">File Size</label>
+                <input id="fileSize" type="number" class="form-control" value="4" min="1" placeholder="Enter an integer..." />
+                <small class="form-text text-muted">File sizes are represented in bytes.</small>
+            </div>
+            <button type="button" onclick="" class="btn btn-primary">Add File</button>
+        </form>
+        <div id="sizeTooBigDialog" class="d-none"></div>
+        <div id="sizeTooSmallDialog" class="d-none"></div>
+
+        <div id="templates">
+            <div class="block node card d-none">
+                <div class="card-header"></div>
+                <div class="card-body"></div>
+            </div>
+            <p class="textBlock d-none"></p>
+            <div class="bitmap-free d-none"></div>
+        </div>
+
+        <main id="mainContent"><!-- Dynamic Content Here --></main>
         <script src="js/vsfs.js"></script>
     </body>
 </html>

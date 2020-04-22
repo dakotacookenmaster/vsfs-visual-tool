@@ -1,0 +1,80 @@
+/* CSS Color Scheme */
+:root {
+    --dark-gray: #1E2024;
+    --blue-gray: #374157;
+}
+
+body {
+    background: var(--dark-gray);
+    padding: 20px;
+}
+.block {
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+.card-header {
+    text-align: center;
+}
+.freeInode {
+    width: 20px;
+    height: 20px;
+    background: green;
+    float: left;
+}
+.usedInode {
+    width: 20px;
+    height: 20px;
+    background: red;
+    float: left;
+}
+label {
+    color: white;
+}
+.form {
+    width: 400px;
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 20px;
+    float: left;
+    margin-right: 20px;
+    margin-top: 20px;
+    box-shadow: 2px 2px 10px 2px #0c0c0e;
+}
+#mainContent {
+    width: 50%;
+    clear: both;
+    padding-top: 20px;
+    position: relative;
+}
+.textBlock {
+    border: 2px solid var(--blue-gray);
+    background: var(--dark-gray);
+    color: white;
+    border-radius: 5px;
+    padding: 8px;
+}
+.bitmap-free {
+    width: 5px;
+    height: 5px;
+    float: left;
+    background: green;
+    border: 2px solid black;
+}
+.node {
+    background: none;
+    border: 2px solid white;
+    box-shadow: 2px 2px 10px 2px #0c0c0e;
+}
+.card-header {
+    color: white;
+    border-bottom: 2px solid white;
+    background: var(--blue-gray);
+}
+.bitmap-used {
+    width: 10px;
+    height: 10px;
+    float: left;
+    background: red;
+    border: 2px solid black;
+}
