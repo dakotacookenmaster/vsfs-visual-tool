@@ -1,22 +1,3 @@
-// class MemoryBlock {
-//     constructor(size, number, parentNode, nextBlock = null) {
-//         this.size = size;
-//         this.number = number;
-//         this.nextBlock = nextBlock;
-        
-//         // // Add a new memory block to the DOM
-//         // this.block = $("#memoryBlock").clone(true).toggleClass("d-none").attr('id', 'block' + number);
-//         // this.block.children(".card-body").text("Data: " + this.content);
-//         // this.block.children(".card-header").text(this.number);
-//         // this.block.find(".connector").css("background", this.color);
-//         // this.parentNode.append(this.block);
-//     }
-// }
-
-// class Inode extends MemoryBlock {
-
-// }
-
 // class Visualizer {
 //     constructor() {
 //         this.blockSize = 0; // Expressed in KiB
@@ -64,7 +45,7 @@ class Supernode extends Surface {
         this.surface.removeClass("d-none");
         this.surface.find(".card-header").text("Supernode");
         let cardBody = this.surface.find(".card-body");
-        let textBlock = $(".textBlock").clone(true).removeClass("d-none");
+        let textBlock = this.surface.find(".textBlock").clone(true).removeClass("d-none");
         cardBody.append(textBlock.clone(true).attr("id", "blockSize").text("Block Size: " + this.blockSize + "KiB")); 
         cardBody.append(textBlock.clone(true).attr("id", "systemName").text("System: " + this.systemName));
         cardBody.append(textBlock.clone(true).attr("id", "implementor").text("Author: " + this.implementor));
@@ -76,24 +57,24 @@ class Supernode extends Surface {
 }
 
 class Bitmap extends Surface {
-    constructor(surface, size) {
+    constructor(surface, size, name) {
         super(surface);
         // Initialize the bitmap to be completely free
         this.bitmap = new Array(size).fill(true);
+        this.size = size;
+        this.name = name;
     }
     paint(parentSurface) {
-        console.log("painting");
         this.surface.removeClass("d-none");
-        this.surface.find(".card-header").text("Inode Bitmap");
+        this.surface.find(".card-header").text(this.name + " Bitmap");
         let cardBody = this.surface.find(".card-body");
-        
         for(let i = 0; i < this.bitmap.length; i++) {
-            cardBody.append($(".bitmap-free").clone(true).removeClass("d-none"));
+            var x = $("#templates .bitmap-free").clone(true).removeClass("d-none");
+            cardBody.append(x);
         }
         parentSurface.append(this.surface);
     }
     clear() {
-        console.log("removing from surface");
         this.surface.remove();
     }
     isFree(index) {
@@ -107,7 +88,7 @@ class Bitmap extends Surface {
 class Inode extends Surface {
     constructor(surface, number, type, uid, rwx, size) {
         super(surface);
-        this.number = number; // used to globally identify this inode
+        this.number = number;
         this.type = type;
         this.uid = uid;
         this.rwx = rwx;
@@ -117,30 +98,50 @@ class Inode extends Surface {
         this.links_count = 0;
         this.block_pointers = null;
     }
+    paint(parentSurface) {
+        this.surface.removeClass("d-none");
+        this.surface.find(".card-header").text("Inode #" + this.number);
+        let cardBody = this.surface.find(".card-body");
+        cardBody.find(".inodeType").text("Type: " + this.type).removeClass("d-none");
+        cardBody.find(".inodeUid").text("UID: " + this.uid).removeClass("d-none");
+        cardBody.find(".inodeRwx").text("RWX: " + this.rwx).removeClass("d-none");
+        cardBody.find(".inodeSize").text("Size: " + this.size + " bytes").removeClass("d-none");
+        cardBody.find(".inodeBlocks").text("Blocks: " + this.blocks).removeClass("d-none");
+        cardBody.find(".inodeCTime").text("CTime: " + this.ctime).removeClass("d-none");
+        cardBody.find(".inodeLinksCount").text("Links Count: " + this.links_count).removeClass("d-none");
+        cardBody.find(".inodeBlockPointers").text("Block Pointers: " + this.block_pointers).removeClass("d-none");
+
+        parentSurface.append(this.surface);
+    }
+    clear() {
+        this.surface.remove();
+    }
 }
 
-class InodeBlock extends Surface{
-    constructor(surface, size) {
+class InodeBlock extends Surface {
+    constructor(surface, numberOfInodes, inodesPerBlock, inodeSize) {
         super(surface);
-        this.size = size;
-        this.bitmap = new Bitmap(surface, size);
+        this.numberOfInodes = numberOfInodes;
+        this.inodesPerBlock = inodesPerBlock;
+        this.inodeSize = inodeSize;
         this.inodes = [];
 
-        for(let i = 0; i < this.size; i++) {
-            this.inodes.push(new Inode(surface, i, "root", null, null, null, this.size));
+        for(let i = 0; i < this.numberOfInodes; i++) {
+            this.inodes.push(new Inode($(".inode").clone(true), i, null, null, null, null));
         }
     }
     paint(parentSurface) {
-        this.bitmap.paint(parentSurface);
-        // for(var name in this.inodes) {
-        //     this.inodes[name].paint(parentSurface);
-        // }
+        // need to do work here!
+        this.surface.removeClass("d-none");
+        this.surface.find(".card-header").text("Inode Block");
+        for(var name in this.inodes) {
+            this.inodes[name].paint(parentSurface);
+        }
     }
     clear() {
-        this.bitmap.clear();
-        // for(var name in this.inodes) {
-        //     this.inodes[name].clear()
-        // }
+        for(var name in this.inodes) {
+            this.inodes[name].clear();
+        }
     }
 }
 
@@ -163,8 +164,9 @@ class File extends Surface{
 class Visualizer {
     constructor() {
         this.objects = [];
-        this.blockSize = 1;
+        this.blockSize = 1; // KiB
         this.numberOfBlocks = 1;
+        this.inodeSize = 256; // bits
     }
 
     paint(surface) {
@@ -177,34 +179,56 @@ class Visualizer {
         for(var name in this.objects) {
             this.objects[name].clear();
         }
+        this.objects = [];
     }
 
     build(surface) {
         this.blockSize = Math.floor($("#blockSize").val());
+        this.blockSizeBits = this.blockSize * 1024;
         this.numberOfBlocks = Math.floor($("#numberOfBlocks").val());
-        this.objects = [];
-
-        this.clear();
-        this.validateEntry();
+        this.numberOfInodeBlocks = Math.ceil(this.numberOfBlocks / (this.blockSizeBits / this.inodeSize));
+        this.numberOfInodes = this.numberOfInodeBlocks * (this.blockSizeBits / this.inodeSize);
+        this.inodesPerBlock = this.numberOfInodes / this.numberOfInodeBlocks;
         
-        this.superNode = new Supernode($(".node").clone(true), this.blockSize, "VSFS", "Dakota Cookenmaster")
-        this.inodeBlock = new InodeBlock($(".node").clone(true), this.blockSize);
-        this.objects.push(this.superNode, this.inodeBlock);
 
+        if(!this.validateEntry()) {
+            this.build(surface);
+        }
+        this.clear();
+        this.superNode = new Supernode($(".node").clone(true), this.blockSize, "VSFS", "Dakota Cookenmaster");
+        this.inodeBitmap = new Bitmap($(".node").clone(true), this.numberOfInodes, "Inode");
+        this.dataBitmap = new Bitmap($(".node").clone(true), this.numberOfBlocks, "Data");
+        this.inodeBlock = new InodeBlock($(".node").clone(true), this.numberOfInodes, this.inodesPerBlock, this.inodeSize);
+        this.objects.push(this.superNode, this.inodeBitmap, this.dataBitmap, this.inodeBlock);
         this.paint(surface);
     }
 
     validateEntry() {
         if(this.blockSize < 1) {
             this.blockSize = 1;
-            alert("You have chosen a block size less than 1KiB. This value has been increased by the system.")
+            alert("You have chosen a block size less than 1KiB. This value has been increased by the system.");
+            $("#blockSize").val(this.blockSize);
+            return false;
+        }
+        if(this.blockSize > 20) {
+            this.blockSize = 20;
+            alert("You have chosen a block size greater than 20KiB. This value has been reduced by the system.");
+            $("#blockSize").val(this.blockSize);
+            return false;
         }
         if(this.numberOfBlocks > 32) {
             this.numberOfBlocks = 32;
-            alert("You have chosen total blocks in excess of 32. This value has been reduced by the system.")
+            alert("You have chosen total blocks in excess of 32. This value has been reduced by the system.");
+            $("#numberOfBlocks").val(this.numberOfBlocks);
+            return false;
+
         } else if (this.numberOfBlocks < 1) {
             this.numberOfBlocks = 1;
             alert("You have chosen total blocks below 1. This value has been increased by the system.");
+            $("#numberOfBlocks").val(this.numberOfBlocks);
+            return false;
+        } else {
+            return true;
         }
     }
 }
@@ -213,10 +237,10 @@ class Visualizer {
 let v = new Visualizer();
 
 function visualize() {
-    // if(v.objects.length) {
-    //     if(!confirm("Starting a new visualization will erase all previous content. Are you sure you want to continue?")) {
-    //         return;
-    //     }
-    // }
+    if(v.objects.length) {
+        if(!confirm("Starting a new visualization will overwrite all previous content. Are you sure you want to continue?")) {
+            return;
+        }
+    }
     v.build($("#mainContent"));
 }
