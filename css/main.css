@@ -1,0 +1,177 @@
+/* CSS Color Scheme */
+:root {
+    --dark-gray: #1E2024;
+    --blue-gray: #374157;
+}
+/* animations */
+@keyframes nodeSlide {
+    from {
+        top: -1000px;
+        opacity: 0;
+    }
+    to {
+        top: 0px;
+        opacity: 1;
+    }
+}
+@keyframes highlight {
+    0% {
+        background: var(--blue-gray);
+    }
+    50% {
+        background: white;
+    }
+    100% {
+        background: var(--blue-gray);
+    }
+}
+
+/**************/
+body {
+    background: var(--dark-gray);
+    padding: 20px;
+}
+.title {
+    padding: 20px;
+    border: 2px solid white;
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px 2px #0c0c0e;
+}
+.block {
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+label {
+    color: white;
+}
+.form {
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 2px 2px 10px 2px #0c0c0e;
+    min-height: 538px;
+}
+.container-fluid {
+    padding: 0px;
+}
+#mainContent {
+    clear: both;
+    padding-top: 20px;
+    position: relative;
+}
+.textBlock {
+    border: 2px solid var(--blue-gray);
+    background: var(--dark-gray);
+    color: white;
+    border-radius: 5px;
+    padding: 8px;
+}
+.bitmap-free {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    float: left;
+    background: green;
+    border: 2px solid black;
+}
+.bitmap-used {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    float: left;
+    background: red;
+    border: 2px solid black;
+}
+.node {
+    background: var(--dark-gray);
+    border: 2px solid white;
+    box-shadow: 2px 2px 10px 2px #0c0c0e;
+    opacity: 0;
+    width: 300px;
+    overflow-x: hidden;
+    min-height: 514px;
+    max-height: 514px;
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+    animation: nodeSlide 2.5s 0.25s ease-in-out;
+    animation-fill-mode: forwards;
+}
+.inode {
+    background: var(--dark-gray);
+    border: 2px solid white;
+    box-shadow: 2px 2px 10px 2px #0c0c0e;
+    opacity: 0;
+    float: left;
+    min-height: 514px;
+    max-height: 514px;
+    overflow-x: hidden;
+    margin-right: 5px;
+    margin-top: 5px;
+    width: 300px;
+    animation: nodeSlide 2.5s 0.25s ease-in-out;
+    animation-fill-mode: forwards;
+}
+.card-header {
+    color: white;
+    border-bottom: 2px solid white;
+    background: var(--blue-gray);
+    height: 66px;
+    text-align: center;
+}
+.card-button {
+    padding: 10px;
+    border: 2px solid var(--blue-gray);
+    border-radius: 5px;
+    display: block;
+    cursor: pointer;
+    float: right;
+}
+/*.card-button:hover {*/
+/*    box-shadow: 2px 2px 5px 2px #0c0c0e;*/
+/*    border-color: white;*/
+/*    transition: 0.25s ease-in-out;*/
+/*}*/
+.card-button.trashcan {
+    color: white;
+    background: #900909;
+    border-color: white;
+}
+.table {
+    color: white;
+}
+footer {
+    clear: both;
+    height: 20px;
+}
+.highlight {
+    animation: highlight 0.5s;
+    animation-iteration-count: 2;
+}
+.deleted {
+    float: right;
+    color: white;
+    padding: 5px;
+    background: #900909;
+    border: 2px solid white;
+    border-radius: 5px;
+}
+.blockAnchor {
+    background: #374157;
+    color: white;
+    display: inline-block;
+    line-height: 5px;
+    text-align: center;
+    margin: 5px 5px;
+    height: 30px;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 5px;
+}
+.blockAnchor:hover {
+    text-decoration: none;
+    color: #374157;
+    background: white;
+    border: 2px solid #374157;
+}
