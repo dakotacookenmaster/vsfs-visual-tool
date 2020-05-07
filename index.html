@@ -21,6 +21,9 @@
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
+        <!-- Font Awesome Icons -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
         <!-- Custom CSS Stylesheets -->
         <link rel="stylesheet" type="text/css" href="css/main.css" />
 
@@ -28,38 +31,71 @@
         <title>VSFS Visualizer</title>
     </head>
     <body>
-        <h1 class="text-center text-light">Very Simple File System (VSFS) Visualizer</h1>
-        <form class="form">
-            <div class="form-group">
-                <label for="numberOfBlocks">Number of Data Blocks:</label>
-                <input id="numberOfBlocks" class="form-control" type="number" min="1" max="64" value="1" placeholder="Enter an integer..." />   
-                <small class="form-text text-muted">32 is the maximum number of supported data blocks.</small>
-            </div>
-            <div class="form-group">
-                <label for="blockSize">Block Size:</label>
-                <input id="blockSize" type="number" class="form-control" value="1" min="1" placeholder="Enter a number..." />
-                <small class="form-text text-muted">Data block sizes are represented in KiB.</small>
-            </div>
-            <button type="button" onclick="visualize()" class="btn btn-primary">Visualize</button>
-        </form>
-        <form class="form">
-            <div class="form-group">
-                <label for="filename">Filename:</label>
-                <input id="filename" class="form-control" type="text" placeholder="Enter a filename..." />   
-                <small class="form-text text-muted">e.g. visualize.txt</small>
-            </div>
-            <div class="form-group">
-                <label for="fileSize">File Size</label>
-                <input id="fileSize" type="number" class="form-control" value="4" min="1" placeholder="Enter an integer..." />
-                <small class="form-text text-muted">File sizes are represented in bytes.</small>
-            </div>
-            <button type="button" onclick="" class="btn btn-primary">Add File</button>
-        </form>
+        <h1 class="text-center text-light title">Very Simple File System (VSFS) Visualizer</h1>
+        <div class="container-fluid">
+            <section class="row no-gutters">
+                <div class="col-lg-6 pr-lg-2 mt-2">
+                    <form id="visualizeForm" class="form col-12">
+                        <div class="form-group">
+                            <label for="numberOfBlocks">Number of Data Blocks:</label>
+                            <input id="numberOfBlocks" class="form-control" type="number" min="1" max="1000" value="32" placeholder="Enter an integer..." />
+                            <small class="form-text text-muted">1000 is the maximum number of supported data blocks (not recommended for slower computers).</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="blockSize">Block Size:</label>
+                            <input id="blockSize" type="number" class="form-control" value="1" min="1" max="1024" placeholder="Enter a number..." />
+                            <small class="form-text text-muted">Data block sizes are represented in KiB.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="inodeSize">Inode Size:</label>
+                            <select id="inodeSize" class="form-control">
+                                <option value="64">64 bytes</option>
+                                <option value="128">128 bytes</option>
+                                <option value="256" selected>256 bytes</option>
+                                <option value="512">512 bytes</option>
+                                <option value="1024">1024 bytes</option>
+                            </select>
+                            <small class="form-text text-muted">Choose how many bytes an inode requires.</small>
+                        </div>
+                        <button id="visualizeButton" type="button" onclick="visualize()" class="btn btn-primary">Visualize</button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <form id="addForm" class="form col-12 mt-2">
+                        <div class="form-group">
+                            <label id="nameLabel" for="name">Filename:</label>
+                            <input id="name" class="form-control" type="text" placeholder="Enter a name..." disabled/>
+                            <small id="nameSmall" class="form-text text-muted">e.g. visualize.txt (note: extensions are ignored.)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" class="form-control" disabled>
+                                <option value="file" selected>File</option>
+                                <option value="directory">Directory</option>
+                            </select>
+                            <small class="form-text text-muted">Choose whether to make this a file or a directory.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="parent">Parent</label>
+                            <select id="parent" class="form-control" disabled><!-- dynamic content --></select>
+                            <small class="form-text text-muted">Choose a parent directory.</small>
+                        </div>
+                        <div id="fs" class="form-group">
+                            <label for="fileSize">File Size</label>
+                            <input id="fileSize" type="number" class="form-control" value="4" min="1" placeholder="Enter an integer..." disabled />
+                            <small class="form-text text-muted">File sizes are represented in bytes.</small>
+                        </div>
+                        <button id="newFile" type="button" onclick="addFile()" class="btn btn-primary" disabled>Add File</button>
+                    </form>
+                </div>
+            </section>
+        </div>
         <div id="sizeTooBigDialog" class="d-none"></div>
         <div id="sizeTooSmallDialog" class="d-none"></div>
 
         <div id="templates">
             <div class="inode card d-none">
+                <i class="trashcan card-button fas fa-trash d-none" title="Unlink the data associated with this inode."></i>
                 <div class="card-header"></div>
                 <div class="card-body">
                     <p class="inodeType textBlock d-none"></p>
@@ -69,20 +105,20 @@
                     <p class="inodeBlocks textBlock d-none"></p>
                     <p class="inodeCTime textBlock d-none"></p>
                     <p class="inodeLinksCount textBlock d-none"></p>
-                    <p class="inodeBlockPointers textBlock d-none"></p>
+                    <div class="inodeBlockPointers textBlock d-none"></div>
                 </div>
             </div>
             <div class="node card d-none">
                 <div class="card-header"></div>
                 <div class="card-body">
-                     <p class="textBlock d-none"></p>
+                    <p class="textBlock d-none"></p>
                 </div>
             </div>
            
             <div class="bitmap-free d-none"></div>
         </div>
-
         <main id="mainContent"><!-- Dynamic Content Here --></main>
+        <footer></footer>
         <script src="js/vsfs.js"></script>
     </body>
 </html>
