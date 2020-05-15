@@ -13,7 +13,7 @@ class Surface {
     }
 }
 
-class Supernode extends Surface {
+class Superblock extends Surface {
     constructor(surface, blockSize, totalBlocks, inodeSize, totalInodes, inodeBlocks, systemName, implementor) {
         super(surface);
         this.blockSize = blockSize;
@@ -26,7 +26,7 @@ class Supernode extends Surface {
     }
     paint(parentSurface) {
         this.surface.removeClass("d-none");
-        this.surface.find(".card-header").text("Supernode");
+        this.surface.find(".card-header").text("Superblock");
         let cardBody = this.surface.find(".card-body");
         let textBlock = this.surface.find(".textBlock").clone(true).removeClass("d-none");
         cardBody.append(textBlock.clone(true).attr("id", "blockSize").text("Block Size: " + this.blockSize + "KiB"));
@@ -555,12 +555,12 @@ class Visualizer {
             this.build(surface);
         }
         this.clear();
-        this.superNode = new Supernode($("#templates .node").clone(true), this.blockSize, this.numberOfBlocks, this.inodeSize, this.numberOfInodes, this.numberOfInodeBlocks,"VSFS", "Dakota Cookenmaster");
+        this.superBlock = new Superblock($("#templates .node").clone(true), this.blockSize, this.numberOfBlocks, this.inodeSize, this.numberOfInodes, this.numberOfInodeBlocks,"VSFS", "Dakota Cookenmaster");
         this.inodeBitmap = new Bitmap($("#templates .node").clone(true), this.numberOfInodes, "Inode");
         this.dataBitmap = new Bitmap($("#templates .node").clone(true), this.numberOfBlocks, "Data");
         this.inodeBlock = new InodeBlock($("#templates .node").clone(true), this.numberOfInodes, this.inodesPerBlock, this.inodeSize);
         this.dataBlock = new DataBlock($("#templates .node").clone(true), this.numberOfBlocks);
-        this.objects.push(this.superNode, this.inodeBitmap, this.dataBitmap, this.inodeBlock, this.dataBlock);
+        this.objects.push(this.superBlock, this.inodeBitmap, this.dataBitmap, this.inodeBlock, this.dataBlock);
         this.paint(surface);
         this.built = true;
     }
